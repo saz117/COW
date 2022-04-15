@@ -217,8 +217,8 @@
 						}
 					}
 				}
-				xmlhttp.open("GET","getCities.php?q="+country,true);
-				xmlhttp.send();
+				xmlhttp.open("POST","getCities.php",true);
+				xmlhttp.send(JSON.stringify(country));
 			
 			} else{
 				$("citypick").innerHTML="";

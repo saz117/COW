@@ -4,7 +4,7 @@
 	
 	// get the q parameter from URL
 	
-	$q =$_REQUEST["q"]; $cities="";
+	$q =json_decode(file_get_contents("php://input")); $cities="";
 	// lookup all hints from array if $q is different from ""
 	
 	$rows = $db->query("SELECT * FROM cities WHERE country_code LIKE '$q%' LIMIT 6");
