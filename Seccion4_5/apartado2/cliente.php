@@ -76,20 +76,21 @@
 						<input type="text" id="mail" name="mail" placeholder="example@gmail.com" required/><br>
 						
 						Select a Country:<br />
-						<select name="countrypick" id ="countrypick">
+						<select name="countrypick" id ="countrypick" onChange="getCities(this.value)">
 						<!--<option value="">Select Country</option>-->
+						<option value="">Select Country</option>
 						<option value="USA">United States</option>
 						<option value="ESP">Spain</option>
 						<option value="ITA">Italy</option>
 						<option value="MEX">Mexico</option>
 						</select><br />
-						<!--
+						
 						Select a City:<br />
 						<select name="citypick" id="citypick">
 						<option value="">Select City</option>
 							
 						</select><br />
-						-->
+						
 						
 						Select a Hotel:<br />
 						<select name="hotelpick" id="hotelpick">
@@ -192,31 +193,41 @@
 			}
 			var xmlhttp=new XMLHttpRequest();
 			xmlhttp.onreadystatechange=function(){
-			if (xmlhttp.readyState==4 && xmlhttp.status==200){
-				document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
-			}
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+				}
 			}
 			xmlhttp.open("GET","gethint.php?q="+str,true);
 			xmlhttp.send();
 		}
 
 		
-		/*
-		function getCities(country, city){
-			city.innerHTML = ""
-			if(country.value == "USA"){
-				//city.options[city.options.length] = new Option('NewYork', 'NY');
-				
-				"<?php
-					$db = new PDO("mysql:dbname=world","root");	
-					$rows = $db->query("SELECT * FROM cities WHERE country_code LIKE 'USA%' LIMIT 5");
-					?>";
-				//NOTE: we can do the query, if we can do this var htmlString="<?php echo $htmlString; ?>";
-				//maybe we can do something similar with city.options[city.options.length] = new Option('NewYork', 'NY');
-				
+		function getCities(country){
+			
+			if (country){
+				$("citypick").innerHTML="";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.onreadystatechange=function(){
+					if (xmlhttp.readyState==4 && xmlhttp.status==200){
+						var val = xmlhttp.responseText;
+						val = val.split(",");
+						
+						for (var i = 0; i < 5; i += 1) {
+							$("citypick").options.add(new Option(val[i], val[i]));
+						}
+					}
+				}
+				xmlhttp.open("GET","getCities.php?q="+country,true);
+				xmlhttp.send();
+			
+			} else{
+				$("citypick").innerHTML="";
+				$("citypick").options.add(new Option("Select City", ""));
+				return;
 			}
+			
 		}
-		*/
+
 	</script>
 </html>
 <?php?>
