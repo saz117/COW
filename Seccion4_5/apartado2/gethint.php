@@ -10,12 +10,13 @@
 		$q=strtolower($q); $len=strlen($q);
 		foreach($a as $row){ 
 			$name = $row["first_name"];
+			$lastName = $row["last_name"];
 			if (stristr($q, substr($name,0,$len))){ 
 				if ($hint==""){ 
-					$hint=$name; 
+					$hint= "$name $lastName"; 
 				}
-				else{ 
-					$hint .= ", $name";
+				else{ //in case there is more than one suggestion
+					$hint .= ", $name $lastName";
 				}
 			}
 		}
