@@ -69,14 +69,14 @@
 					
 					<form id="reservform" action="http://localhost/xampp/COW/Seccion4_5/apartado1/server.php" method = "post">
 						<label for="name">Name & Last Name:</label><br>
-						<input type="text" onkeyup="showHint(this.value)" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
+						<input type="text" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
 						<p>Suggestions: <span id="txtHint"></span></p>
 						
 						<label for="mail">Email Address:</label><br>
 						<input type="text" id="mail" name="mail" placeholder="example@gmail.com" required/><br>
 						
 						Select a Country:<br />
-						<select name="countrypick" id ="countrypick" onChange="getCities(this.value)">
+						<select name="countrypick" id ="countrypick" >
 						<!--<option value="">Select Country</option>-->
 						<option value="">Select Country</option>
 						<option value="USA">United States</option>
@@ -141,15 +141,15 @@
 			var form = $("reservform"), //document.getElementByID("reservform")
 					name = $("name"),
 					mail = $("mail"),
-					country = $("countrypick"),
-					city = $("citypick");
+					country = $("countrypick");
 			
 			const regexMail = new RegExp(/^[a-zA-z\d\._]+@[a-zA-z\d\._]+.[a-zA-z\d\.]{2,}$/),
 				  regexName = new RegExp(/^[a-zA-z\s]+$/);
 			
 			name.addEventListener("change", function() { checkName(name, regexName); } ); //to check name
 			mail.addEventListener("change", function() { checkMail(mail, regexMail); } ); //to check the mail
-			//country.addEventListener("change", function() { getCities(country, city); } ); 
+			name.addEventListener("keyup", function() { showHint($F("name")); } ); //auto-complete
+			country.addEventListener("change", function() { getCities($F("countrypick")); } ); //dynamically select cities
 			form.onsubmit = function() { checkForm(regexName, regexMail); }; //to check submission
 		});
 		
