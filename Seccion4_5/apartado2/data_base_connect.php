@@ -7,4 +7,7 @@ try{
 }
 catch(PDOException $e){
 }
+
+$dbFirst_names = new PDO("mysql:dbname=imdb_small","root");	
+
 ?>

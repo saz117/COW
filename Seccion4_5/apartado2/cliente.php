@@ -69,7 +69,8 @@
 					
 					<form id="reservform" action="http://localhost/xampp/COW/Seccion4_5/apartado1/server.php" method = "post">
 						<label for="name">Name & Last Name:</label><br>
-						<input type="text" id="name" name="name" placeholder="Name LastName" minlength="4" maxlength="30" required/><br>
+						<input type="text" onkeyup="showHint(this.value)" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
+						<p>Suggestions: <span id="txtHint"></span></p>
 						
 						<label for="mail">Email Address:</label><br>
 						<input type="text" id="mail" name="mail" placeholder="example@gmail.com" required/><br>
@@ -183,6 +184,23 @@
 				return false; // stop form submission
 			}
 		}
+		
+		function showHint(str){
+			if (str.length==0){
+				document.getElementById("txtHint").innerHTML="";
+				return;
+			}
+			var xmlhttp=new XMLHttpRequest();
+			xmlhttp.onreadystatechange=function(){
+			if (xmlhttp.readyState==4 && xmlhttp.status==200){
+				document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+			}
+			}
+			xmlhttp.open("GET","gethint.php?q="+str,true);
+			xmlhttp.send();
+		}
+
+		
 		/*
 		function getCities(country, city){
 			city.innerHTML = ""
