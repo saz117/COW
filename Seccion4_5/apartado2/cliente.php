@@ -212,7 +212,7 @@
 						var val = xmlhttp.responseText;
 						val = val.split(",");
 						
-						for (var i = 0; i < 5; i += 1) {
+						for (var i = 0; i < val.length; i += 1) {
 							$("citypick").options.add(new Option(val[i], val[i]));
 						}
 					}

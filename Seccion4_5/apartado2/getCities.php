@@ -7,7 +7,7 @@
 	$q =$_REQUEST["q"]; $cities="";
 	// lookup all hints from array if $q is different from ""
 	
-	$rows = $db->query("SELECT * FROM cities WHERE country_code LIKE '$q%' LIMIT 5");
+	$rows = $db->query("SELECT * FROM cities WHERE country_code LIKE '$q%' LIMIT 6");
 	$count = 0;
 	foreach ($rows as $row) {
 	$opt = $row["name"];
