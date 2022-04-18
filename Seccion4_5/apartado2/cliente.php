@@ -67,7 +67,7 @@
 				<div class="col-10 bg-light text-white mx-auto text-center form p-4" style="background-image: url('images/background.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
                     <h2>Reservation</h2>
 					
-					<form id="reservform" action="http://localhost/xampp/COW/Seccion4_5/apartado1/server.php" method = "post">
+					<form id="reservform" action="http://localhost/xampp/COW/Seccion4_5/apartado2/server.php" method = "post">
 						<label for="name">Name & Last Name:</label><br>
 						<input type="text" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
 						<p>Suggestions: <span id="txtHint"></span></p>
@@ -155,8 +155,13 @@
 		
 		function checkForm(rn, rm) {
 			
-			if (rn.test($F("name")) == false || rm.test($F("mail")) == false) {
+			if (rn.test($F("name")) == false || rm.test($F("mail")) == false) { //check if name and email match their regex
 				alert("Error, invalid name or email."); // show error message
+				event.preventDefault();
+				return false; // stop form submission
+			}
+			if ($F("countrypick") == "" || $F("citypick")){ //check that the city or country choice are not empty
+				alert("Error, it seems you didn't pick a city or country. "); // show error message
 				event.preventDefault();
 				return false; // stop form submission
 			}
@@ -201,7 +206,8 @@
 			xmlhttp.send();
 		}
 
-		
+		/*
+		//ajax without prototype
 		function getCities(country){
 			
 			if (country){
@@ -227,6 +233,45 @@
 			}
 			
 		}
+		*/
+		
+		//ajax with prototype
+		function getCities(country){
+			if (country){
+				
+				new Ajax.Request("getCities.php", {
+					method: "POST",
+					parameters: {name: country},
+					onSuccess: getCities2,
+					onFailure: citiesError,
+					onException: citiesError
+				});	
+			}
+			else{
+				$("citypick").innerHTML="";
+				$("citypick").options.add(new Option("Select City", ""));
+				return;
+			}
+		}
+		
+		function getCities2(response){
+			
+			$("citypick").innerHTML="";
+			if (response.readyState==4 && response.status==200){
+				
+				var val = response.responseText;
+				
+				val = val.split(",");
+				for (var i = 0; i < val.length; i += 1) {
+					$("citypick").options.add(new Option(val[i], val[i]));
+				}
+			}
+		}
+		
+		function citiesError(response){
+			alert("Unexpected error with our DataBase" );
+		}
+		
 
 	</script>
 </html>
