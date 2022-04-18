@@ -190,7 +190,8 @@
 				return false; // stop form submission
 			}
 		}
-		
+		/*
+		//ajax without prototype
 		function showHint(str){
 			if (str.length==0){
 				document.getElementById("txtHint").innerHTML="";
@@ -206,8 +207,7 @@
 			xmlhttp.send();
 		}
 
-		/*
-		//ajax without prototype
+		
 		function getCities(country){
 			
 			if (country){
@@ -236,6 +236,28 @@
 		*/
 		
 		//ajax with prototype
+		function showHint(str){
+			if (str.length==0){
+				
+				$("txtHint").innerHTML="";
+				return;
+			}
+			
+			new Ajax.Request("gethint.php?q="+str, {
+					method: "GET",
+					onSuccess: showHint2,
+					onFailure: citiesError,
+					onException: citiesError
+				});				
+		}
+		
+		function showHint2(response){
+			
+			if (response.readyState==4 && response.status==200){
+				$("txtHint").innerHTML=response.responseText;
+			}
+		}
+		
 		function getCities(country){
 			if (country){
 				
