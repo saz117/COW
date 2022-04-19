@@ -1,5 +1,6 @@
 <?php
 	require("data_base_connect.php");
+	
 	// Fill up array with names, technically the array will be each row of the query
 	
 	// get the q parameter from URL
@@ -22,4 +23,5 @@
 	}
 	
 	echo $cities==="" ? "no cities" : $cities;
+
 ?>

@@ -1,10 +1,12 @@
 <?php
 	require("data_base_connect.php");
+	/*
 	// Fill up array with names, technically the array will be each row of the query
 	$a = $dbFirst_names->query("SELECT * FROM actors LIMIT 100");
 	
 	// get the q parameter from URL
-	$q=$_REQUEST["q"]; $hint="";
+	$q=$_REQUEST["q"];
+	$hint="";
 	// lookup all hints from array if $q is different from ""
 	if ($q !== ""){ 
 		$q=strtolower($q); $len=strlen($q);
@@ -24,4 +26,15 @@
 	// Output "no suggestion" if no hint were found
 	// or output the correct values
 	echo $hint==="" ? "no suggestion" : $hint;
+	*/
+	$q=$_REQUEST["q"];
+	$rows = $dbFirst_names->query("SELECT * FROM actors WHERE first_name LIKE '$q%' LIMIT 10");
+	
+	if ($q !== ""){ 
+		echo "<ul>\n";
+		foreach ($rows as $row) {
+			echo "<li>{$row["first_name"]} {$row["last_name"]}</li>\n";
+		}
+		echo "</ul>\n";
+	}
 ?>

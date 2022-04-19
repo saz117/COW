@@ -68,9 +68,14 @@
                     <h2>Reservation</h2>
 					
 					<form id="reservform" action="http://localhost/xampp/COW/Seccion4_5/apartado2/server.php" method = "post">
-						<label for="name">Name & Last Name:</label><br>
-						<input type="text" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
-						<p>Suggestions: <span id="txtHint"></span></p>
+					
+						  <div>
+							<label for="name">Name & Last Name:</label><br>
+							<input type="text" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
+							<p>Suggestions: <div id="txtHint" style="background-color:#33475b"></div></p>
+						  </div>
+						
+						
 						
 						<label for="mail">Email Address:</label><br>
 						<input type="text" id="mail" name="mail" placeholder="example@gmail.com" required/><br>
@@ -135,9 +140,12 @@
 	
 	<script type="text/javascript" src="scriptaculous-js-1.9.0/lib/prototype.js"></script>
 	<script type="text/javascript" src="scriptaculous-js-1.9.0/src/scriptaculous.js"></script>
+	<script type = "text/javascript" src = "scriptaculous-js-1.9.0/src/scriptaculous.js?load = effects,controls"></script>
 	<script type="text/javascript">
 	//alternativa a window.onload
 		document.observe("dom:loaded", function() {
+			
+				
 			var form = $("reservform"), //document.getElementByID("reservform")
 					name = $("name"),
 					mail = $("mail"),
@@ -148,7 +156,17 @@
 			
 			name.addEventListener("change", function() { checkName(name, regexName); } ); //to check name
 			mail.addEventListener("change", function() { checkMail(mail, regexMail); } ); //to check the mail
-			name.addEventListener("keyup", function() { showHint($F("name")); } ); //auto-complete
+			
+			name.addEventListener("keyup", function(event) { showHint($F("name")); } ); //auto-complete
+			/*
+			window.addEventListener('keyup', function(event) {
+																  if (event.keyCode !== 13) {
+																	//alert("in")
+																	name.addEventListener("keyup", function() { showHint($F("name")); } ); //auto-complete
+																  }
+																});
+																*/
+			
 			country.addEventListener("change", function() { getCities($F("countrypick")); } ); //dynamically select cities
 			form.onsubmit = function() { checkForm(regexName, regexMail); }; //to check submission
 		});
@@ -190,73 +208,29 @@
 				return false; // stop form submission
 			}
 		}
-		/*
-		//ajax without prototype
-		function showHint(str){
-			if (str.length==0){
-				document.getElementById("txtHint").innerHTML="";
-				return;
-			}
-			var xmlhttp=new XMLHttpRequest();
-			xmlhttp.onreadystatechange=function(){
-				if (xmlhttp.readyState==4 && xmlhttp.status==200){
-					document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
-				}
-			}
-			xmlhttp.open("GET","gethint.php?q="+str,true);
-			xmlhttp.send();
-		}
-
 		
-		function getCities(country){
-			
-			if (country){
-				$("citypick").innerHTML="";
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.onreadystatechange=function(){
-					if (xmlhttp.readyState==4 && xmlhttp.status==200){
-						var val = xmlhttp.responseText;
-						val = val.split(",");
-						
-						for (var i = 0; i < val.length; i += 1) {
-							$("citypick").options.add(new Option(val[i], val[i]));
-						}
-					}
-				}
-				xmlhttp.open("POST","getCities.php",true);
-				xmlhttp.send(JSON.stringify(country));
-			
-			} else{
-				$("citypick").innerHTML="";
-				$("citypick").options.add(new Option("Select City", ""));
-				return;
-			}
-			
-		}
-		*/
 		
-		//ajax with prototype
+		
 		function showHint(str){
+			
+			$("txtHint").innerHTML=""
+			
 			if (str.length==0){
-				
 				$("txtHint").innerHTML="";
 				return;
+				
+			}else {
+				//alert(event.keyCode)
+				
+				new Ajax.Autocompleter(
+			   'name',
+			   'txtHint',
+			   'gethint.php?q='+str, {frequency: 0.8}
+				);
 			}
-			
-			new Ajax.Request("gethint.php?q="+str, {
-					method: "GET",
-					onSuccess: showHint2,
-					onFailure: citiesError,
-					onException: citiesError
-				});				
+					
 		}
 		
-		function showHint2(response){
-			
-			if (response.readyState==4 && response.status==200){
-				$("txtHint").innerHTML=response.responseText;
-			}
-		}
 		
 		function getCities(country){
 			if (country){
