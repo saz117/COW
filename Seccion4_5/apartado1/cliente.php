@@ -131,8 +131,8 @@
 		
 	</body>	
 	
-	<script type="text/javascript" src="scriptaculous-js-1.9.0/lib/prototype.js"></script>
-	<script type="text/javascript" src="scriptaculous-js-1.9.0/src/scriptaculous.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js"></script>
 	<script type="text/javascript">
 	//alternativa a window.onload
 		document.observe("dom:loaded", function() {

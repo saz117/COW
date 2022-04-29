@@ -64,17 +64,16 @@
 
 				</nav>
 				
-				<div class="col-10 bg-light text-white mx-auto text-center form p-4" style="background-image: url('images/background.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+				<div id= "formdiv" class="col-10 bg-light text-white mx-auto text-center form p-4" style="background-image: url('images/background.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
                     <h2>Reservation</h2>
 					
-					<form id="reservform" action="http://localhost/xampp/COW/Seccion4_5/apartado2/server.php" method = "post">
+					<!--<form id="reservform" >-->
 					
 						  <div>
 							<label for="name">Name & Last Name:</label><br>
 							<input type="text" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
 							<p>Suggestions: <div id="txtHint" style="background-color:#33475b"></div></p>
 						  </div>
-						
 						
 						
 						<label for="mail">Email Address:</label><br>
@@ -107,7 +106,7 @@
 						</select><br />
 						
 						Select the number of guests:
-						<select name="nguests">
+						<select name="nguests" id="nguests">
 						<option value="1">1</option>
 						<option value="2">2</option>
 						<option value="3">3</option>
@@ -119,9 +118,9 @@
 						<label for="date">Date:</label>
 						<input type="date" id="date" name="date" value=today required/><br>
 						
-						<input type="submit" value="submit"/>
+						<input type="submit" id = "subButton"value="submit"/>
 						
-					</form>
+					<!--</form>-->
 					
 					
 					
@@ -138,9 +137,9 @@
 		
 	</body>	
 	
-	<script type="text/javascript" src="scriptaculous-js-1.9.0/lib/prototype.js"></script>
-	<script type="text/javascript" src="scriptaculous-js-1.9.0/src/scriptaculous.js"></script>
-	<script type = "text/javascript" src = "scriptaculous-js-1.9.0/src/scriptaculous.js?load = effects,controls"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js"></script>
+	<script type = "text/javascript" src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js?load = effects,controls"></script>
 	<script type="text/javascript">
 	//alternativa a window.onload
 		document.observe("dom:loaded", function() {
@@ -168,7 +167,8 @@
 																*/
 			
 			country.addEventListener("change", function() { getCities($F("countrypick")); } ); //dynamically select cities
-			form.onsubmit = function() { checkForm(regexName, regexMail); }; //to check submission
+			$("subButton").addEventListener("click", function() { checkForm(regexName, regexMail); } );
+			//form.onsubmit = function() { checkForm(regexName, regexMail); }; //to check submission
 		});
 		
 		function checkForm(rn, rm) {
@@ -178,13 +178,39 @@
 				event.preventDefault();
 				return false; // stop form submission
 			}
-			if ($F("countrypick") == "" || $F("citypick")){ //check that the city or country choice are not empty
+			if ($F("countrypick") == "" || $F("citypick") == ""){ //check that the city or country choice are not empty
 				alert("Error, it seems you didn't pick a city or country. "); // show error message
 				event.preventDefault();
 				return false; // stop form submission
 			}
+			submitForm();
+		}
+		
+		function submitForm(){
+			
+			new Ajax.Request("server.php", {
+					method: "POST",
+					parameters: {name: $F("name"), mail: $F("mail"), hotelpick: $F("hotelpick"), nguests: $F("nguests"), date: $F("date"), countrypick: $F("countrypick"), citypick: $F("citypick")},
+					onSuccess: successFunc,
+					onFailure: failureFunc,
+					onException: failureFunc
+				});	
 			
 		}
+		
+		function successFunc(response) {
+			if (200 == response.status) {
+				alert("Call is success");
+			}
+			var container = $('formdiv');
+			var content = response.responseText;
+			container.update(content);
+			//$("formdiv").update("hola");
+		}
+		function failureFunc(response) {
+			alert("Call is failed" );
+		}
+
 			
 		function checkName(name, rn) {
 			
