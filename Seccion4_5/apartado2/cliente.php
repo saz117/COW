@@ -157,14 +157,6 @@
 			mail.addEventListener("change", function() { checkMail(mail, regexMail); } ); //to check the mail
 			
 			name.addEventListener("keyup", function(event) { showHint($F("name")); } ); //auto-complete
-			/*
-			window.addEventListener('keyup', function(event) {
-																  if (event.keyCode !== 13) {
-																	//alert("in")
-																	name.addEventListener("keyup", function() { showHint($F("name")); } ); //auto-complete
-																  }
-																});
-																*/
 			
 			country.addEventListener("change", function() { getCities($F("countrypick")); } ); //dynamically select cities
 			$("subButton").addEventListener("click", function() { checkForm(regexName, regexMail); } );
@@ -183,7 +175,14 @@
 				event.preventDefault();
 				return false; // stop form submission
 			}
-			submitForm();
+			new Ajax.Request("getCollition.php", {
+					method: "POST",
+					parameters: {mail: $F("mail"), date: $F("date")},
+					onSuccess: submitForm,
+					onFailure: failureFunc,
+					onException: failureFunc
+				});	
+			//submitForm();
 		}
 		
 		function submitForm(){
@@ -199,16 +198,19 @@
 		}
 		
 		function successFunc(response) {
-			if (200 == response.status) {
-				alert("Call is success");
-			}
+			
 			var container = $('formdiv');
 			var content = response.responseText;
 			container.update(content);
-			//$("formdiv").update("hola");
+			
 		}
 		function failureFunc(response) {
-			alert("Call is failed" );
+			if (400 == response.status) {
+				alert("It seems you already have a reservation with us");
+			}else{
+				alert("Unexpected error with our DataBase" );
+			}
+			
 		}
 
 			
@@ -236,11 +238,14 @@
 		}
 		
 		
-		
 		function showHint(str){
 			
-			$("txtHint").innerHTML=""
-			
+			//$("txtHint").innerHTML=""
+			/*
+			updateElement: function(response){
+					   str = response.innerHTML;
+				   }
+			*/
 			if (str.length==0){
 				$("txtHint").innerHTML="";
 				return;
@@ -251,7 +256,10 @@
 				new Ajax.Autocompleter(
 			   'name',
 			   'txtHint',
-			   'gethint.php?q='+str, {frequency: 0.8}
+			   'gethint.php?q='+str, {
+				   frequency: 0.5,
+				   
+				   }
 				);
 			}
 					
@@ -265,8 +273,8 @@
 					method: "POST",
 					parameters: {name: country},
 					onSuccess: getCities2,
-					onFailure: citiesError,
-					onException: citiesError
+					onFailure: failureFunc,
+					onException: failureFunc
 				});	
 			}
 			else{
@@ -288,10 +296,6 @@
 					$("citypick").options.add(new Option(val[i], val[i]));
 				}
 			}
-		}
-		
-		function citiesError(response){
-			alert("Unexpected error with our DataBase" );
 		}
 		
 

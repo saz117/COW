@@ -7,7 +7,6 @@
 	
 	//$q =json_decode(file_get_contents("php://input")); $cities=""; //ajax without prototype
 	$q = $_POST['name']; //ajax with prototype
-	// lookup all hints from array if $q is different from ""
 	
 	$rows = $db->query("SELECT * FROM cities WHERE country_code LIKE '$q%' LIMIT 6");
 	$count = 0;
@@ -16,7 +15,7 @@
 		if($count == 0){
 				$cities= "$opt";
 		}
-		else{ //in case there is more than one suggestion
+		else{ 
 			$cities .= ", $opt";
 		}
 		$count++;

@@ -25,6 +25,7 @@
 		
 		$rows = $db->query("INSERT INTO `reservations` (`name`, `email`, `hotel`, `num_guests`, `date`, `country`, `city`) 
 		VALUES ('$name', '$mail', '$hotelpick', '$numguests', '$date', '$countrypick', '$citypick')");
+		
 	}
 	else{
 		echo "Error, invalid name or email submitted. <br>";
