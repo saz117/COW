@@ -53,7 +53,7 @@
 			<div class="row vh-100">
 				<nav class="col-2 bg-info text-white">
 					<div class="sidebar">
-					  <a href="#home">Home</a>
+					  <a href="http://localhost/xampp/COW/Seccion%201/Apartado%202/hotelWebSite.html">Home</a>
 					  <a href="#Top Hotels" class="link-light">Top Hotels</a>
 					  <a class="active" href="#Full Package">Full Package</a>
 					  <a href="#Hotel + Flight">Hotel + Flight</a>
@@ -240,25 +240,20 @@
 		
 		function showHint(str){
 			
-			//$("txtHint").innerHTML=""
-			/*
-			updateElement: function(response){
-					   str = response.innerHTML;
-				   }
-			*/
 			if (str.length==0){
 				$("txtHint").innerHTML="";
 				return;
 				
 			}else {
-				//alert(event.keyCode)
 				
 				new Ajax.Autocompleter(
 			   'name',
 			   'txtHint',
 			   'gethint.php?q='+str, {
 				   frequency: 0.5,
-				   
+				   updateElement: function(response){
+					   $("name").value = response.innerHTML;
+				   }
 				   }
 				);
 			}
