@@ -265,8 +265,6 @@
 		
 		
 		function showHint(availableTags){
-			//alert(str)
-			//alert(availableTags);
 				
 			$("#name").autocomplete({
 				source: availableTags

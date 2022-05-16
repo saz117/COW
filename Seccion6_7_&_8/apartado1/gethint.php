@@ -13,12 +13,14 @@
 	}
 	*/
 	
-	$rows = $dbFirst_names->query("SELECT * FROM actors LIMIT 10");
+	$rows = $dbFirst_names->query("SELECT * FROM actors LIMIT 20");
 	$result = "";
 		
 		$count = 0;
 		foreach ($rows as $row) {
 			$opt = $row["first_name"];
+			$opt .= " ";
+			$opt .= $row["last_name"];
 			
 			if($count == 0){
 				$result= "$opt";
