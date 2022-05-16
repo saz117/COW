@@ -71,8 +71,8 @@
 					
 						  <div>
 							<label for="name">Name & Last Name:</label><br>
-							<input type="text" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
-							<p>Suggestions: <div id="txtHint" style="background-color:#33475b"></div></p>
+							<input type="text" id="name" name="name" class="ui-widget-content" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
+							<p>Suggestions: <div id="txtHint" class="ui-widget-content" style="background-color:#33475b"></div></p>
 						  </div>
 						
 						
@@ -145,59 +145,65 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js"></script>
 	<script type = "text/javascript" src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js?load = effects,controls"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"> </script>
+	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
 	<script type="text/javascript">
 	
 	
 		
 		jQuery(document).ready(function($){
-			$('#hotelpick').on('change', function() { 
-				alert("hello");
-				var price = $('<td>From $399.99</td>');
-				$('#hotels').append(price);
-			});
-		});
-		
-		
-		$.noConflict(); //we use no conflict to give other JS libraries control, aside from JQuery
-		//alternativa a window.onload
-		document.observe("dom:loaded", function() {
 			
-				
-			var form = $("reservform"), //document.getElementByID("reservform")
-					name = $("name"),
-					mail = $("mail"),
-					country = $("countrypick");
+			var form = $("#reservform"), //document.getElementByID("reservform")
+					name = $("#name"),
+					mail = $("#mail"),
+					country = $("#countrypick");
+			var availableTags = [];
+			$.get("gethint.php",
+				function(data){
+				var val = data.split(",");
+				for (var i = 0; i < val.length; i += 1) {
+					availableTags.push(val[i]);
+				}
+				alert(availableTags);
+				alert(jQuery.type(availableTags));
+				});
 			
 			const regexMail = new RegExp(/^[a-zA-z\d\._]+@[a-zA-z\d\._]+.[a-zA-z\d\.]{2,}$/),
 				  regexName = new RegExp(/^[a-zA-z\s]+$/);
 			
-			name.addEventListener("change", function() { checkName(name, regexName); } ); //to check name
-			mail.addEventListener("change", function() { checkMail(mail, regexMail); } ); //to check the mail
+			name.on("change", function() { checkName(name, regexName); } ); //to check name
+			mail.on("change", function() { checkMail(mail, regexMail); } ); //to check the mail
 			
-			name.addEventListener("keyup", function(event) { showHint($F("name")); } ); //auto-complete
+			name.on("keyup", function(event) { showHint(availableTags); } ); //auto-complete
 			
-			country.addEventListener("change", function() { getCities($F("countrypick")); } ); //dynamically select cities
-			$("subButton").addEventListener("click", function() { checkForm(regexName, regexMail); } );
-			//form.onsubmit = function() { checkForm(regexName, regexMail); }; //to check submission
+			country.on("change", function() { getCities($("#countrypick").val()); } ); //dynamically select cities
+			$("subButton").on("click", function() { checkForm(regexName, regexMail); } );
+			
+			$('#hotelpick').on('change', function(){ updateTable(); } );
 		});
 		
+		function updateTable(){
+			alert("hello");
+			var price = $('<td>From $399.99</td>');
+			$('#hotels').append(price);
+		}
+				
 		function checkForm(rn, rm) {
 			
-			if (rn.test($F("name")) == false || rm.test($F("mail")) == false) { //check if name and email match their regex
+			if (rn.test($F("#name")) == false || rm.test($F("#mail")) == false) { //check if name and email match their regex
 				alert("Error, invalid name or email."); // show error message
 				event.preventDefault();
 				return false; // stop form submission
 			}
-			if ($F("countrypick") == "" || $F("citypick") == ""){ //check that the city or country choice are not empty
+			if ($F("#countrypick") == "" || $F("#citypick") == ""){ //check that the city or country choice are not empty
 				alert("Error, it seems you didn't pick a city or country. "); // show error message
 				event.preventDefault();
 				return false; // stop form submission
 			}
 			new Ajax.Request("getCollition.php", {
 					method: "POST",
-					parameters: {mail: $F("mail"), date: $F("date")},
+					parameters: {mail: $F("#mail"), date: $F("#date")},
 					onSuccess: submitForm,
 					onFailure: failureFunc,
 					onException: failureFunc
@@ -236,48 +242,35 @@
 			
 		function checkName(name, rn) {
 			
-			if (rn.test($F("name")) == false) {
-				//alert("Error, invalid name."); // show error message
-				name.value = ""; //reset value
-				name.shake();
-				name.highlight({startcolor: "#ff0000", duration: 2 }); //make it red for a momment
+			if (rn.test(name.val()) == false) {
+			
+				name.val(""); //reset value
+				name.effect("shake");
+				//name.highlight({startcolor: "#ff0000", duration: 2 }); //make it red for a momment
+
 				return false; // stop form submission
 			}
-			//name.highlight({restorecolor: "#00ff00"}); //keep it green
 		}
 		
 		function checkMail(mail, rm) {
 			
-			if (rm.test($F("mail")) == false) {
-				//alert("Error, invalid email."); // show error message
-				mail.value = "";
-				mail.shake();
-				mail.highlight({startcolor: "#ff0000", duration: 2 });
+			if (rm.test(mail.val()) == false) {
+				
+				mail.val("");
+				mail.effect("shake");
+				//mail.highlight({startcolor: "#ff0000", duration: 2 });
 				return false; // stop form submission
 			}
 		}
 		
 		
-		function showHint(str){
-			
-			if (str.length==0){
-				$("txtHint").innerHTML="";
-				return;
+		function showHint(availableTags){
+			//alert(str)
+			//alert(availableTags);
 				
-			}else {
-				
-				new Ajax.Autocompleter(
-			   'name',
-			   'txtHint',
-			   'gethint.php?q='+str, {
-				   frequency: 0.5,
-				   updateElement: function(response){
-					   $("name").value = response.innerHTML;
-				   }
-				   }
-				);
-			}
-					
+			$("#name").autocomplete({
+				source: availableTags
+			});		
 		}
 		
 		
