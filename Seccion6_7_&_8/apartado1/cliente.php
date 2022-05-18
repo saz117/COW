@@ -206,9 +206,7 @@
 				img = "<img src='images/galaxy.jpg' />";	
 			}
 			
-			  
-			//$('#hotels').html( "<tr> <td>"+ img +"</td> </tr>");
-			$("#hotels td:first").html($('#hotelpick').val());
+			$("#hotels td:first").html($('#hotelpick').val()); //maybe add a little description instead
 			$("#hotels td:last").html( "<td>"+ img +"</td>");
 			//$("#hotels td:last, #hotels td:first").html( "<td>"+ img +"</td>"); //multiple seleccion, but in this case it doesn't make sense
 
