@@ -165,8 +165,7 @@
 				for (var i = 0; i < val.length; i += 1) {
 					availableTags.push(val[i]);
 				}
-				alert(availableTags);
-				alert(jQuery.type(availableTags));
+				
 				});
 			
 			const regexMail = new RegExp(/^[a-zA-z\d\._]+@[a-zA-z\d\._]+.[a-zA-z\d\.]{2,}$/),
@@ -274,33 +273,29 @@
 		
 		function getCities(country){
 			if (country){
-				
-				new Ajax.Request("getCities.php", {
-					method: "POST",
-					parameters: {name: country},
-					onSuccess: getCities2,
-					onFailure: failureFunc,
-					onException: failureFunc
-				});	
+				$.post("getCities.php",
+				{
+				name:country,
+				},
+				function(data,status){
+					$("#citypick").empty();
+					
+					if (status=="success"){
+						var val = data;
+						
+						val = val.split(",");
+						for (var i = 0; i < val.length; i += 1) {
+							
+							//$("#citypick").options.add(new Option(val[i], val[i]));
+							$('#citypick').append($('<option>', { value: val[i], text: val[i]}));
+						}
+					}
+				});
 			}
 			else{
-				$("citypick").innerHTML="";
-				$("citypick").options.add(new Option("Select City", ""));
+				$("#citypick").empty();
+				$('#citypick').append($('<option>', { value: "", text: "Select City"}));
 				return;
-			}
-		}
-		
-		function getCities2(response){
-			
-			$("citypick").innerHTML="";
-			if (response.readyState==4 && response.status==200){
-				
-				var val = response.responseText;
-				
-				val = val.split(",");
-				for (var i = 0; i < val.length; i += 1) {
-					$("citypick").options.add(new Option(val[i], val[i]));
-				}
 			}
 		}
 		
