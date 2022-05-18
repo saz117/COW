@@ -123,10 +123,14 @@
 					<!--</form>-->
                 </div>
 				
-				<table id="hotels" class="col-6 text-black text-center">
+				<table class="col-6 text-black text-center">
 				  <tr>
-					<td>Name</td>
-					<td>Price</td>
+					<td>Hotel</td>
+					<td>Image</td>
+				  </tr>
+				  <tr id="hotels">
+					<td>Hotel Name</td>
+					<td><img src='images/hotelLogo.jpg' /></td>
 				  </tr>
 				</table>
 				
@@ -177,65 +181,102 @@
 			name.on("keyup", function(event) { showHint(availableTags); } ); //auto-complete
 			
 			country.on("change", function() { getCities($("#countrypick").val()); } ); //dynamically select cities
-			$("subButton").on("click", function() { checkForm(regexName, regexMail); } );
+			$("#subButton").on("click", function() { checkForm(regexName, regexMail); } );
 			
 			$('#hotelpick').on('change', function(){ updateTable(); } );
 		});
 		
 		function updateTable(){
-			alert("hello");
-			var price = $('<td>From $399.99</td>');
-			$('#hotels').append(price);
+			
+			var img = "<img src='images/hotelLogo.jpg' />";
+			
+			if($('#hotelpick').val() == "All-Stars Hotel"){
+				img = "<img src='images/all-stars.jpg' />";
+
+			}else if($('#hotelpick').val() == "Hotel Vela"){
+				img = "<img src='images/vela.jpg' />";
+				
+			}else if($('#hotelpick').val() == "Sunny-Sides"){
+				img = "<img src='images/sunny-sides.jpg' />";
+				
+			}else if($('#hotelpick').val() == "Megaton"){
+				img = "<img src='images/megaton.jpg' />";
+				
+			}else if($('#hotelpick').val() == "Galaxy of Adventures"){
+				img = "<img src='images/galaxy.jpg' />";	
+			}
+			
+			  
+			//$('#hotels').html( "<tr> <td>"+ img +"</td> </tr>");
+			$("#hotels td:first").html($('#hotelpick').val());
+			$("#hotels td:last").html( "<td>"+ img +"</td>");
+			//$("#hotels td:last, #hotels td:first").html( "<td>"+ img +"</td>"); //multiple seleccion, but in this case it doesn't make sense
+
 		}
 				
 		function checkForm(rn, rm) {
 			
-			if (rn.test($F("#name")) == false || rm.test($F("#mail")) == false) { //check if name and email match their regex
+			if (rn.test($("#name").val()) == false || rm.test($("#mail").val()) == false) { //check if name and email match their regex
 				alert("Error, invalid name or email."); // show error message
 				event.preventDefault();
 				return false; // stop form submission
 			}
-			if ($F("#countrypick") == "" || $F("#citypick") == ""){ //check that the city or country choice are not empty
+			if ($("#countrypick").val() == "" || $("#citypick").val() == ""){ //check that the city or country choice are not empty
 				alert("Error, it seems you didn't pick a city or country. "); // show error message
 				event.preventDefault();
 				return false; // stop form submission
 			}
-			new Ajax.Request("getCollition.php", {
-					method: "POST",
-					parameters: {mail: $F("#mail"), date: $F("#date")},
-					onSuccess: submitForm,
-					onFailure: failureFunc,
-					onException: failureFunc
-				});	
-			//submitForm();
+			
+			$.post("getCollition.php",
+				{
+				mail: $("#mail").val(),
+				date: $("#date").val()
+				},
+				function(data,status){
+					if(status="success"){
+						submitForm();
+					}
+					
+			}).fail(
+				function() {
+					  alert("It seems you already have a reservation with us");
+			}); 
+			
 		}
 		
 		function submitForm(){
 			
-			new Ajax.Request("server.php", {
-					method: "POST",
-					parameters: {name: $F("name"), mail: $F("mail"), hotelpick: $F("hotelpick"), nguests: $F("nguests"), date: $F("date"), countrypick: $F("countrypick"), citypick: $F("citypick")},
-					onSuccess: successFunc,
-					onFailure: failureFunc,
-					onException: failureFunc
-				});	
+			$.post("server.php",
+				{
+				name: $("#name").val(),
+				mail: $("#mail").val(),
+				hotelpick: $("#hotelpick").val(),
+				nguests: $("#nguests").val(),
+				date: $("#date").val(),
+				countrypick: $("#countrypick").val(),
+				citypick: $("#citypick").val()
+				},
+				function(data,status){
+					
+					if(status="success"){
+						successFunc(data);
+					}
+					
+			}).fail(
+				function() {
+					  failureFunc();
+			}); 
 			
 		}
 		
 		function successFunc(response) {
 			
-			var container = $('formdiv');
-			var content = response.responseText;
-			container.update(content);
+			$('#formdiv').empty();
+			$('#formdiv').html(response);
 			
 		}
 		function failureFunc(response) {
-			if (400 == response.status) {
-				alert("It seems you already have a reservation with us");
-			}else{
-				alert("Unexpected error with our DataBase" );
-			}
-			
+			alert("Unexpected error with our DataBase" );
 		}
 
 			
@@ -286,11 +327,14 @@
 						val = val.split(",");
 						for (var i = 0; i < val.length; i += 1) {
 							
-							//$("#citypick").options.add(new Option(val[i], val[i]));
 							$('#citypick').append($('<option>', { value: val[i], text: val[i]}));
 						}
 					}
-				});
+					//do failure case
+				}).fail(
+				function() {
+					  failureFunc();
+			});
 			}
 			else{
 				$("#citypick").empty();

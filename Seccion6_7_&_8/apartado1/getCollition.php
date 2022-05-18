@@ -19,7 +19,7 @@
 			}
 		}
 		if ($count != 0){
-			header('HTTP/1.1 400 Bad Request', true, 400); //there is a collition
+			header('HTTP/1.1 400 Bad Request', true, 404); //there is a collition
 		}
 		
 	} else {
