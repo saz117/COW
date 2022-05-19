@@ -64,15 +64,15 @@
 
 				</nav>
 				
-				<div id= "formdiv" class="col-10 bg-light text-white mx-auto text-center form p-4" style="background-image: url('images/background.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
+				<div id= "formdiv" class="col-4 bg-light text-white text-center form p-4" style="background-image: url('images/background.webp'); background-repeat: no-repeat; background-size: cover; background-position: center;">
                     <h2>Reservation</h2>
 					
 					<!--<form id="reservform" >-->
 					
 						  <div>
 							<label for="name">Name & Last Name:</label><br>
-							<input type="text" id="name" name="name" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
-							<p>Suggestions: <div id="txtHint" style="background-color:#33475b"></div></p>
+							<input type="text" id="name" name="name" class="ui-widget-content" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
+							<p>Suggestions: <div id="txtHint" class="ui-widget-content" style="background-color:#33475b"></div></p>
 						  </div>
 						
 						
@@ -121,10 +121,19 @@
 						<input type="submit" id = "subButton"value="submit"/>
 						
 					<!--</form>-->
-					
-					
-					
                 </div>
+				
+				<table class="col-6 text-black text-center">
+				  <tr>
+					<td>Hotel</td>
+					<td>Image</td>
+				  </tr>
+				  <tr id="hotels">
+					<td>Hotel Name</td>
+					<td><img src='images/hotelLogo.jpg' /></td>
+				  </tr>
+				</table>
+				
 			</div>
 		</div>
 			
@@ -140,156 +149,218 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js"></script>
 	<script type = "text/javascript" src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js?load = effects,controls"></script>
+	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
 	<script type="text/javascript">
-	//alternativa a window.onload
-		document.observe("dom:loaded", function() {
+	
+	
+		
+		jQuery(document).ready(function($){
 			
+			var form = $("#reservform"), //document.getElementByID("reservform")
+					name = $("#name"),
+					mail = $("#mail"),
+					country = $("#countrypick");
+			var availableTags = [];
+			$.get("gethint.php",
+				function(data){
+				var val = data.split(",");
+				for (var i = 0; i < val.length; i += 1) {
+					availableTags.push(val[i]);
+				}
 				
-			var form = $("reservform"), //document.getElementByID("reservform")
-					name = $("name"),
-					mail = $("mail"),
-					country = $("countrypick");
+				});
 			
 			const regexMail = new RegExp(/^[a-zA-z\d\._]+@[a-zA-z\d\._]+.[a-zA-z\d\.]{2,}$/),
 				  regexName = new RegExp(/^[a-zA-z\s]+$/);
 			
-			name.addEventListener("change", function() { checkName(name, regexName); } ); //to check name
-			mail.addEventListener("change", function() { checkMail(mail, regexMail); } ); //to check the mail
+			name.on("change", function() { checkName(name, regexName); } ); //to check name
+			mail.on("change", function() { checkMail(mail, regexMail); } ); //to check the mail
 			
-			name.addEventListener("keyup", function(event) { showHint($F("name")); } ); //auto-complete
+			name.on("keyup", function(event) { showHint(availableTags); } ); //auto-complete
 			
-			country.addEventListener("change", function() { getCities($F("countrypick")); } ); //dynamically select cities
-			$("subButton").addEventListener("click", function() { checkForm(regexName, regexMail); } );
-			//form.onsubmit = function() { checkForm(regexName, regexMail); }; //to check submission
+			country.on("change", function() { getCities($("#countrypick").val()); } ); //dynamically select cities
+			$("#subButton").on("click", function() { checkForm(regexName, regexMail); } );
+			
+			$('#hotelpick').on('change', function(){ updateTable(); } );
 		});
 		
+		function updateTable(){
+			
+			var info = {
+				hotelpick: $("#hotelpick").val()
+			}
+
+			$('#target').html('sending..');
+
+			$.ajax({
+				url: 'getHotelInfo.php',
+				type: 'post',
+				dataType: 'json',
+				data: info,
+				success: function (data) {
+					//alert(data.image);
+					//alert(data.description);
+					
+					
+					$("#hotels td:first").html(data.description); //maybe add a little description instead
+					$("#hotels td:last").html( "<td>"+ "<img src='" + data.image +"' /></td>");
+				},
+			});
+			
+			/*
+			var img = "<img src='images/hotelLogo.jpg' />";
+			
+			if($('#hotelpick').val() == "All-Stars Hotel"){
+				img = "<img src='images/all-stars.jpg' />";
+
+			}else if($('#hotelpick').val() == "Hotel Vela"){
+				img = "<img src='images/vela.jpg' />";
+				
+			}else if($('#hotelpick').val() == "Sunny-Sides"){
+				img = "<img src='images/sunny-sides.jpg' />";
+				
+			}else if($('#hotelpick').val() == "Megaton"){
+				img = "<img src='images/megaton.jpg' />";
+				
+			}else if($('#hotelpick').val() == "Galaxy of Adventures"){
+				img = "<img src='images/galaxy.jpg' />";	
+			}
+			
+			$("#hotels td:first").html($('#hotelpick').val()); //maybe add a little description instead
+			$("#hotels td:last").html( "<td>"+ img +"</td>");
+			//$("#hotels td:last, #hotels td:first").html( "<td>"+ img +"</td>"); //multiple seleccion, but in this case it doesn't make sense
+			*/
+
+		}
+				
 		function checkForm(rn, rm) {
 			
-			if (rn.test($F("name")) == false || rm.test($F("mail")) == false) { //check if name and email match their regex
+			if (rn.test($("#name").val()) == false || rm.test($("#mail").val()) == false) { //check if name and email match their regex
 				alert("Error, invalid name or email."); // show error message
 				event.preventDefault();
 				return false; // stop form submission
 			}
-			if ($F("countrypick") == "" || $F("citypick") == ""){ //check that the city or country choice are not empty
+			if ($("#countrypick").val() == "" || $("#citypick").val() == ""){ //check that the city or country choice are not empty
 				alert("Error, it seems you didn't pick a city or country. "); // show error message
 				event.preventDefault();
 				return false; // stop form submission
 			}
-			new Ajax.Request("getCollition.php", {
-					method: "POST",
-					parameters: {mail: $F("mail"), date: $F("date")},
-					onSuccess: submitForm,
-					onFailure: failureFunc,
-					onException: failureFunc
-				});	
-			//submitForm();
+			
+			$.post("getCollition.php",
+				{
+				mail: $("#mail").val(),
+				date: $("#date").val()
+				},
+				function(data,status){
+					if(status="success"){
+						submitForm();
+					}
+					
+			}).fail(
+				function() {
+					  alert("It seems you already have a reservation with us");
+			}); 
+			
 		}
 		
 		function submitForm(){
 			
-			new Ajax.Request("server.php", {
-					method: "POST",
-					parameters: {name: $F("name"), mail: $F("mail"), hotelpick: $F("hotelpick"), nguests: $F("nguests"), date: $F("date"), countrypick: $F("countrypick"), citypick: $F("citypick")},
-					onSuccess: successFunc,
-					onFailure: failureFunc,
-					onException: failureFunc
-				});	
+			$.post("server.php",
+				{
+				name: $("#name").val(),
+				mail: $("#mail").val(),
+				hotelpick: $("#hotelpick").val(),
+				nguests: $("#nguests").val(),
+				date: $("#date").val(),
+				countrypick: $("#countrypick").val(),
+				citypick: $("#citypick").val()
+				},
+				function(data,status){
+					
+					if(status="success"){
+						successFunc(data);
+					}
+					
+			}).fail(
+				function() {
+					  failureFunc();
+			}); 
 			
 		}
 		
 		function successFunc(response) {
 			
-			var container = $('formdiv');
-			var content = response.responseText;
-			container.update(content);
+			$('#formdiv').empty();
+			$('#formdiv').html(response);
 			
 		}
 		function failureFunc(response) {
-			if (400 == response.status) {
-				alert("It seems you already have a reservation with us");
-			}else{
-				alert("Unexpected error with our DataBase" );
-			}
-			
+			alert("Unexpected error with our DataBase" );
 		}
 
 			
 		function checkName(name, rn) {
 			
-			if (rn.test($F("name")) == false) {
-				//alert("Error, invalid name."); // show error message
-				name.value = ""; //reset value
-				name.shake();
-				name.highlight({startcolor: "#ff0000", duration: 2 }); //make it red for a momment
+			if (rn.test(name.val()) == false) {
+			
+				name.val(""); //reset value
+				name.effect("shake");
+				//name.highlight({startcolor: "#ff0000", duration: 2 }); //make it red for a momment
+
 				return false; // stop form submission
 			}
-			//name.highlight({restorecolor: "#00ff00"}); //keep it green
 		}
 		
 		function checkMail(mail, rm) {
 			
-			if (rm.test($F("mail")) == false) {
-				//alert("Error, invalid email."); // show error message
-				mail.value = "";
-				mail.shake();
-				mail.highlight({startcolor: "#ff0000", duration: 2 });
+			if (rm.test(mail.val()) == false) {
+				
+				mail.val("");
+				mail.effect("shake");
+				//mail.highlight({startcolor: "#ff0000", duration: 2 });
 				return false; // stop form submission
 			}
 		}
 		
 		
-		function showHint(str){
-			
-			if (str.length==0){
-				$("txtHint").innerHTML="";
-				return;
+		function showHint(availableTags){
 				
-			}else {
-				
-				new Ajax.Autocompleter(
-			   'name',
-			   'txtHint',
-			   'gethint.php?q='+str, {
-				   frequency: 0.5,
-				   updateElement: function(response){
-					   $("name").value = response.innerHTML;
-				   }
-				   }
-				);
-			}
-					
+			$("#name").autocomplete({
+				source: availableTags
+			});		
 		}
 		
 		
 		function getCities(country){
 			if (country){
-				
-				new Ajax.Request("getCities.php", {
-					method: "POST",
-					parameters: {name: country},
-					onSuccess: getCities2,
-					onFailure: failureFunc,
-					onException: failureFunc
-				});	
+				$.post("getCities.php",
+				{
+				name:country,
+				},
+				function(data,status){
+					$("#citypick").empty();
+					
+					if (status=="success"){
+						var val = data;
+						
+						val = val.split(",");
+						for (var i = 0; i < val.length; i += 1) {
+							
+							$('#citypick').append($('<option>', { value: val[i], text: val[i]}));
+						}
+					}
+					//do failure case
+				}).fail(
+				function() {
+					  failureFunc();
+			});
 			}
 			else{
-				$("citypick").innerHTML="";
-				$("citypick").options.add(new Option("Select City", ""));
+				$("#citypick").empty();
+				$('#citypick').append($('<option>', { value: "", text: "Select City"}));
 				return;
-			}
-		}
-		
-		function getCities2(response){
-			
-			$("citypick").innerHTML="";
-			if (response.readyState==4 && response.status==200){
-				
-				var val = response.responseText;
-				
-				val = val.split(",");
-				for (var i = 0; i < val.length; i += 1) {
-					$("citypick").options.add(new Option(val[i], val[i]));
-				}
 			}
 		}
 		
