@@ -125,11 +125,11 @@
 				
 				<table class="col-6 text-black text-center">
 				  <tr>
-					<td>Hotel</td>
+					<td>Description</td>
 					<td>Image</td>
 				  </tr>
 				  <tr id="hotels">
-					<td>Hotel Name</td>
+					<td>Select a hotel to see its description</td>
 					<td><img src='images/hotelLogo.jpg' /></td>
 				  </tr>
 				</table>
@@ -146,9 +146,9 @@
 		
 	</body>	
 	
-	<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
+	<!--<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js"></script>
-	<script type = "text/javascript" src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js?load = effects,controls"></script>
+	<script type = "text/javascript" src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js?load = effects,controls"></script>-->
 	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
@@ -187,27 +187,57 @@
 		});
 		
 		function updateTable(){
-			
-			var img = "<img src='images/hotelLogo.jpg' />";
-			
-			if($('#hotelpick').val() == "All-Stars Hotel"){
-				img = "<img src='images/all-stars.jpg' />";
+			//esto es mas facil pero es con post, y con el ejemplo de abajo no me funcionaba post, asi que use GET. 
+			//en este caso, el JSON.parse no funciona porque ajax ya te hace el parse, asi que para este apartado tuve que usar el ejemplo de clase.
+			/*
+			var info = "<hotelpick>"+ $('#hotelpick').val() +"</hotelpick>";
 
-			}else if($('#hotelpick').val() == "Hotel Vela"){
-				img = "<img src='images/vela.jpg' />";
+			$.ajax({
+				url: 'getHotelInfo.php',
+				type: 'GET',
+				dataType: 'xml',
+				data: info,
+				success: function (xml) {
+					alert($(xml).find("description"));
+					$("#hotels td:first").html($(xml).find("description")); //maybe add a little description instead
+					$("#hotels td:last").html( "<td>"+ "<img src='" + $(xml).find("image") +"' /></td>");
+				},
+			}).fail(
+				function(data,status) {
+					alert($(data).find("parsererror"));
+					alert(status);
+			});
+			*/
+			
+			xmlhttp=new XMLHttpRequest();
+			xmlhttp.open("GET","getHotelInfo.php?hotelpick=" +$('#hotelpick').val(),true);
+			xmlhttp.send();
+			
+			xmlhttp.onreadystatechange = function(){
+				// Javascript function JSON.parse to parse JSON data
+				var parser = new DOMParser();
+				parser = new DOMParser();
 				
-			}else if($('#hotelpick').val() == "Sunny-Sides"){
-				img = "<img src='images/sunny-sides.jpg' />";
+				//xml2=xmlhttp.responseText.replace(/ <?[a-zA-Z0-9\.\_\ \""\-\=]*?>/, "");
+				xml = parser.parseFromString(xmlhttp.responseText,"text/xml");
+				/*
+				alert($(xml).find("hotel").attr("hotel"));
+				alert($(xml).find("hotel").attr("description"));
+				alert($(xml).find("hotel").attr("image"));
+				*/
 				
-			}else if($('#hotelpick').val() == "Megaton"){
-				img = "<img src='images/megaton.jpg' />";
+				$("#hotels td:first").html($(xml).find("hotel").attr("description")); //maybe add a little description instead
+				$("#hotels td:last").html( "<td>"+ "<img src='" + $(xml).find("hotel").attr("image") +"' /></td>");
 				
-			}else if($('#hotelpick').val() == "Galaxy of Adventures"){
-				img = "<img src='images/galaxy.jpg' />";	
+				/*
+				$(xml).find("hotel").each(function(){
+				alert($(this).attr("hotel"));
+				});
+				*/
 			}
 			
-			$("#hotels td:first").html($('#hotelpick').val()); //maybe add a little description instead
-			$("#hotels td:last").html( "<td>"+ img +"</td>");
+			//$("#hotels td:first").html(xmlDoc.getElementsByTagName("description")); //maybe add a little description instead
+			//$("#hotels td:last").html( "<td>"+ "<img src='" + jsonObj.image +"' /></td>");
 			//$("#hotels td:last, #hotels td:first").html( "<td>"+ img +"</td>"); //multiple seleccion, but in this case it doesn't make sense
 
 		}

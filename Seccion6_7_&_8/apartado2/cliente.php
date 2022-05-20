@@ -125,11 +125,11 @@
 				
 				<table class="col-6 text-black text-center">
 				  <tr>
-					<td>Hotel</td>
+					<td>Description</td>
 					<td>Image</td>
 				  </tr>
 				  <tr id="hotels">
-					<td>Hotel Name</td>
+					<td>Select a hotel to see its description</td>
 					<td><img src='images/hotelLogo.jpg' /></td>
 				  </tr>
 				</table>
@@ -146,9 +146,9 @@
 		
 	</body>	
 	
-	<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
+	<!--<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js"></script>
-	<script type = "text/javascript" src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js?load = effects,controls"></script>
+	<script type = "text/javascript" src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js?load = effects,controls"></script>-->
 	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
@@ -187,12 +187,12 @@
 		});
 		
 		function updateTable(){
-			
+			//esto es mas facil pero es con post, y con el ejemplo de abajo no me funcionaba post, asi que use GET. 
+			//en este caso, el JSON.parse no funciona porque ajax ya te hace el parse, asi que para este apartado tuve que usar el ejemplo de clase.
+			/*
 			var info = {
 				hotelpick: $("#hotelpick").val()
 			}
-
-			$('#target').html('sending..');
 
 			$.ajax({
 				url: 'getHotelInfo.php',
@@ -200,38 +200,27 @@
 				dataType: 'json',
 				data: info,
 				success: function (data) {
-					//alert(data.image);
-					//alert(data.description);
-					
-					
+					alert(typeof data);
 					$("#hotels td:first").html(data.description); //maybe add a little description instead
 					$("#hotels td:last").html( "<td>"+ "<img src='" + data.image +"' /></td>");
 				},
 			});
-			
-			/*
-			var img = "<img src='images/hotelLogo.jpg' />";
-			
-			if($('#hotelpick').val() == "All-Stars Hotel"){
-				img = "<img src='images/all-stars.jpg' />";
-
-			}else if($('#hotelpick').val() == "Hotel Vela"){
-				img = "<img src='images/vela.jpg' />";
-				
-			}else if($('#hotelpick').val() == "Sunny-Sides"){
-				img = "<img src='images/sunny-sides.jpg' />";
-				
-			}else if($('#hotelpick').val() == "Megaton"){
-				img = "<img src='images/megaton.jpg' />";
-				
-			}else if($('#hotelpick').val() == "Galaxy of Adventures"){
-				img = "<img src='images/galaxy.jpg' />";	
-			}
-			
-			$("#hotels td:first").html($('#hotelpick').val()); //maybe add a little description instead
-			$("#hotels td:last").html( "<td>"+ img +"</td>");
-			//$("#hotels td:last, #hotels td:first").html( "<td>"+ img +"</td>"); //multiple seleccion, but in this case it doesn't make sense
 			*/
+			
+			var http_request = new XMLHttpRequest();
+			http_request.onreadystatechange = function(){
+				// Javascript function JSON.parse to parse JSON data
+				var jsonObj = JSON.parse(http_request.responseText);
+				
+				$("#hotels td:first").html(jsonObj.description); //maybe add a little description instead
+				$("#hotels td:last").html( "<td>"+ "<img src='" + jsonObj.image +"' /></td>");
+				
+				}
+				
+				http_request.open("GET", "getHotelInfo.php?hotelpick=" + $("#hotelpick").val(), true);
+				http_request.send();
+
+			//$("#hotels td:last, #hotels td:first").html( "<td>"+ img +"</td>"); //multiple seleccion, but in this case it doesn't make sense
 
 		}
 				
