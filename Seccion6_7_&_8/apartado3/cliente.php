@@ -123,10 +123,10 @@
 					<!--</form>-->
                 </div>
 				
-				<table class="col-6 text-black text-center">
+				<table class="col-6 text-white text-center" style="background-color: #33475b">
 				  <tr>
-					<td>Description</td>
-					<td>Image</td>
+					<th>Description</th>
+					<th>Image</th>
 				  </tr>
 				  <tr id="hotels">
 					<td>Select a hotel to see its description</td>
@@ -218,7 +218,7 @@
 				var parser = new DOMParser();
 				parser = new DOMParser();
 				
-				//xml2=xmlhttp.responseText.replace(/ <?[a-zA-Z0-9\.\_\ \""\-\=]*?>/, "");
+				//xmlFix=xmlhttp.responseText.replace(/ <?[a-zA-Z0-9\.\_\ \"\-\=]*?>/, ""); //this is in case the header of the xml causes problems
 				xml = parser.parseFromString(xmlhttp.responseText,"text/xml");
 				/*
 				alert($(xml).find("hotel").attr("hotel"));
@@ -226,14 +226,21 @@
 				alert($(xml).find("hotel").attr("image"));
 				*/
 				
-				$("#hotels td:first").html($(xml).find("hotel").attr("description")); //maybe add a little description instead
-				$("#hotels td:last").html( "<td>"+ "<img src='" + $(xml).find("hotel").attr("image") +"' /></td>");
+				//$("#hotels td:first").html($(xml).find("hotel").attr("description")); //maybe add a little description instead
+				//$("#hotels td:last").html( "<td>"+ "<img src='" + $(xml).find("hotel").attr("image") +"' /></td>");
 				
 				/*
 				$(xml).find("hotel").each(function(){
 				alert($(this).attr("hotel"));
 				});
 				*/
+				
+				$(xml).find("hotel").each(function(){
+					//alert($(this).attr("description"));
+					$("#hotels td:first").html($(this).attr("description"));
+					$("#hotels td:last").html( "<td>"+ "<img src='" + $(this).attr("image") +"' /></td>");
+				});
+			
 			}
 			
 			//$("#hotels td:first").html(xmlDoc.getElementsByTagName("description")); //maybe add a little description instead
