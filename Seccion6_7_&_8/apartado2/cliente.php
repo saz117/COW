@@ -297,7 +297,15 @@
 				name.val(""); //reset value
 				name.effect("shake");
 				//name.highlight({startcolor: "#ff0000", duration: 2 }); //make it red for a momment
-
+				 name.animate({
+					  backgroundColor: "#ff0000",
+					  color: "#fff",
+					}, 500 );
+					
+				name.animate({
+					  backgroundColor: "#f",
+					  color: "#000",
+					}, 500 );
 				return false; // stop form submission
 			}
 		}
@@ -309,6 +317,15 @@
 				mail.val("");
 				mail.effect("shake");
 				//mail.highlight({startcolor: "#ff0000", duration: 2 });
+				mail.animate({
+					  backgroundColor: "#ff0000",
+					  color: "#fff",
+					}, 500 );
+				
+				mail.animate({
+					  backgroundColor: "#f",
+					  color: "#000",
+					}, 500 );
 				return false; // stop form submission
 			}
 		}

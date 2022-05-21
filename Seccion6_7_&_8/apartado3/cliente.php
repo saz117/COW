@@ -214,7 +214,7 @@
 			xmlhttp.send();
 			
 			xmlhttp.onreadystatechange = function(){
-				// Javascript function JSON.parse to parse JSON data
+				
 				var parser = new DOMParser();
 				parser = new DOMParser();
 				
