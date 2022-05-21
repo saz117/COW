@@ -71,13 +71,13 @@
 					
 						  <div>
 							<label for="name">Name & Last Name:</label><br>
-							<input type="text" id="name" name="name" class="ui-widget-content" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
+							<input type="text" id="name" name="name" class="ui-widget-content ui-corner-all" placeholder="Name and LastName" minlength="4" maxlength="30" required/><br>
 							<p>Suggestions: <div id="txtHint" class="ui-widget-content" style="background-color:#33475b"></div></p>
 						  </div>
 						
 						
 						<label for="mail">Email Address:</label><br>
-						<input type="text" id="mail" name="mail" placeholder="example@gmail.com" required/><br>
+						<input type="text" id="mail" name="mail" class="ui-widget-content ui-corner-all" placeholder="example@gmail.com" required/><br>
 						
 						Select a Country:<br />
 						<select name="countrypick" id ="countrypick" >
@@ -322,9 +322,19 @@
 				name.val(""); //reset value
 				name.effect("shake");
 				//name.highlight({startcolor: "#ff0000", duration: 2 }); //make it red for a momment
-
+				//name.css("background-color","#F00"); //cahnge color to red, but it is permanent
+				 name.animate({
+					  backgroundColor: "#ff0000",
+					  color: "#fff",
+					}, 500 );
+					
+				name.animate({
+					  backgroundColor: "#f",
+					  color: "#000",
+					}, 500 );
 				return false; // stop form submission
 			}
+			
 		}
 		
 		function checkMail(mail, rm) {
@@ -334,8 +344,18 @@
 				mail.val("");
 				mail.effect("shake");
 				//mail.highlight({startcolor: "#ff0000", duration: 2 });
+				mail.animate({
+					  backgroundColor: "#ff0000",
+					  color: "#fff",
+					}, 500 );
+				
+				mail.animate({
+					  backgroundColor: "#f",
+					  color: "#000",
+					}, 500 );
 				return false; // stop form submission
 			}
+			
 		}
 		
 		
